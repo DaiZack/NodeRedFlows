@@ -1,0 +1,526 @@
+[
+    {
+        "id": "116cb06457dd52bd",
+        "type": "tab",
+        "label": "dashboard jobs",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3c9d7e0fbc28d954",
+        "type": "subflow",
+        "name": "Python Runtie",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 320,
+                "wires": [
+                    {
+                        "id": "81bc9dcdc6f12ca7"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 840,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "67929dc3d1997e87",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1240,
+                "y": 440,
+                "wires": [
+                    {
+                        "id": "e560c108b57b340f",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1040,
+                "y": 560,
+                "wires": [
+                    {
+                        "id": "e560c108b57b340f",
+                        "port": 1
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "emailsubject",
+                "type": "str",
+                "value": "Auto Runing Code failed"
+            }
+        ],
+        "meta": {
+            "module": "python_runtime_email",
+            "version": "0.0.1",
+            "author": "Zack Dai",
+            "desc": "run a python script, if err send a email",
+            "keywords": "Python"
+        },
+        "color": "#DDAA99",
+        "inputLabels": [
+            "trigger"
+        ],
+        "outputLabels": [
+            "std out",
+            "err msg",
+            "normal payload"
+        ],
+        "icon": "font-awesome/fa-file-powerpoint-o"
+    },
+    {
+        "id": "67929dc3d1997e87",
+        "type": "exec",
+        "z": "3c9d7e0fbc28d954",
+        "command": "python3 ",
+        "addpay": "filename",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 460,
+        "y": 300,
+        "wires": [
+            [],
+            [],
+            [
+                "402fe288bc1a8859"
+            ]
+        ]
+    },
+    {
+        "id": "a6319520672c033f",
+        "type": "template",
+        "z": "3c9d7e0fbc28d954",
+        "name": "test.py",
+        "field": "filename",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "/tmp/test.py",
+        "output": "str",
+        "x": 310,
+        "y": 220,
+        "wires": [
+            [
+                "67929dc3d1997e87"
+            ]
+        ]
+    },
+    {
+        "id": "20b3f52d0a88be51",
+        "type": "e-mail",
+        "z": "3c9d7e0fbc28d954",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "zack.dai@delta4digital.com",
+        "dname": "err warning email",
+        "x": 1270,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "e560c108b57b340f",
+        "type": "switch",
+        "z": "3c9d7e0fbc28d954",
+        "name": "",
+        "property": "payload.code",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "0",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 850,
+        "y": 460,
+        "wires": [
+            [
+                "89cdf079c2d23a1b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "402fe288bc1a8859",
+        "type": "change",
+        "z": "3c9d7e0fbc28d954",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.filename",
+                "pt": "msg",
+                "to": "filename",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload.time",
+                "pt": "msg",
+                "to": "$now()",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 640,
+        "y": 360,
+        "wires": [
+            [
+                "e560c108b57b340f"
+            ]
+        ]
+    },
+    {
+        "id": "8f736d0738553d91",
+        "type": "template",
+        "z": "3c9d7e0fbc28d954",
+        "name": "email formatter",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<head>\n</head>\n\n\n<body>\n    <p>Code running fail:{{{payload.filename }}}</p>\n    <p>Time: {{{payload.time }}}</p>\n    <p>Msg: {{{payload.message }}}</p>\n </body>",
+        "output": "str",
+        "x": 1060,
+        "y": 180,
+        "wires": [
+            [
+                "20b3f52d0a88be51"
+            ]
+        ]
+    },
+    {
+        "id": "89cdf079c2d23a1b",
+        "type": "change",
+        "z": "3c9d7e0fbc28d954",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "emailsubject",
+                "tot": "env"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1100,
+        "y": 340,
+        "wires": [
+            [
+                "8f736d0738553d91"
+            ]
+        ]
+    },
+    {
+        "id": "81bc9dcdc6f12ca7",
+        "type": "switch",
+        "z": "3c9d7e0fbc28d954",
+        "name": "set filename",
+        "property": "filename",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 210,
+        "y": 300,
+        "wires": [
+            [
+                "a6319520672c033f"
+            ],
+            [
+                "67929dc3d1997e87"
+            ]
+        ]
+    },
+    {
+        "id": "0ac60ce71e3176e1",
+        "type": "debug",
+        "z": "116cb06457dd52bd",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 990,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "3c0217e80d49134b",
+        "type": "subflow:3c9d7e0fbc28d954",
+        "z": "116cb06457dd52bd",
+        "name": "",
+        "env": [
+            {
+                "name": "apppassword",
+                "type": "cred"
+            }
+        ],
+        "x": 750,
+        "y": 360,
+        "wires": [
+            [
+                "ccafebe69fe610af"
+            ],
+            [
+                "0ac60ce71e3176e1",
+                "7c9b86a73ea2e87a"
+            ],
+            [
+                "9887d2043413af75",
+                "f1051b2fc47560bd"
+            ]
+        ]
+    },
+    {
+        "id": "ccafebe69fe610af",
+        "type": "debug",
+        "z": "116cb06457dd52bd",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "9887d2043413af75",
+        "type": "debug",
+        "z": "116cb06457dd52bd",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1010,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "02f0565f98558081",
+        "type": "cronplus",
+        "z": "116cb06457dd52bd",
+        "name": "Daily Job",
+        "outputField": "payload",
+        "timeZone": "",
+        "persistDynamic": false,
+        "commandResponseMsgOutput": "output1",
+        "outputs": 1,
+        "options": [
+            {
+                "name": "dailyjob",
+                "topic": "dailyjob",
+                "payloadType": "default",
+                "payload": "",
+                "expressionType": "cron",
+                "expression": "0 0 0 * * * *",
+                "location": "",
+                "offset": "0",
+                "solarType": "all",
+                "solarEvents": "sunrise,sunset"
+            }
+        ],
+        "x": 100,
+        "y": 380,
+        "wires": [
+            [
+                "55a075a03d2d5482"
+            ]
+        ]
+    },
+    {
+        "id": "18f3a39e74fc5a1e",
+        "type": "debug",
+        "z": "116cb06457dd52bd",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "msg.filename",
+        "targetType": "jsonata",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "f1051b2fc47560bd",
+        "type": "template",
+        "z": "116cb06457dd52bd",
+        "name": "success template",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{{payload.time}}} {{{payload.filename}}} success",
+        "output": "str",
+        "x": 850,
+        "y": 540,
+        "wires": [
+            [
+                "a0f56fc5f6b65ddf"
+            ]
+        ]
+    },
+    {
+        "id": "7c9b86a73ea2e87a",
+        "type": "template",
+        "z": "116cb06457dd52bd",
+        "name": "fail tmplate",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{{payload.time}}} {{{payload.filename}}} FAIL!!!",
+        "output": "str",
+        "x": 850,
+        "y": 480,
+        "wires": [
+            [
+                "a0f56fc5f6b65ddf"
+            ]
+        ]
+    },
+    {
+        "id": "a0f56fc5f6b65ddf",
+        "type": "file",
+        "z": "116cb06457dd52bd",
+        "name": "joblogs",
+        "filename": "/tmp/autojob.log",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 1040,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "55a075a03d2d5482",
+        "type": "file in",
+        "z": "116cb06457dd52bd",
+        "name": "dailyjob.csv",
+        "filename": "/home/zack/bi/autojob/daily.csv",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 270,
+        "y": 460,
+        "wires": [
+            [
+                "de47dd4d29a5c54a"
+            ]
+        ]
+    },
+    {
+        "id": "de47dd4d29a5c54a",
+        "type": "csv",
+        "z": "116cb06457dd52bd",
+        "name": "",
+        "sep": ",",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 430,
+        "y": 500,
+        "wires": [
+            [
+                "8a6f119619e97a2a"
+            ]
+        ]
+    },
+    {
+        "id": "8a6f119619e97a2a",
+        "type": "change",
+        "z": "116cb06457dd52bd",
+        "name": "set filename",
+        "rules": [
+            {
+                "t": "set",
+                "p": "filename",
+                "pt": "msg",
+                "to": "payload.filename",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 390,
+        "y": 320,
+        "wires": [
+            [
+                "18f3a39e74fc5a1e",
+                "3c0217e80d49134b"
+            ]
+        ]
+    }
+]
