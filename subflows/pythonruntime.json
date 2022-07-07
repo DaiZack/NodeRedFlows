@@ -125,7 +125,7 @@
         "port": "465",
         "secure": true,
         "tls": true,
-        "name": "zack.dai@delta4digital.com",
+        "name": "example@email.com",
         "dname": "err warning email",
         "x": 1270,
         "y": 180,
