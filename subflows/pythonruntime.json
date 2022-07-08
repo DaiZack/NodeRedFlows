@@ -7,11 +7,11 @@
         "category": "",
         "in": [
             {
-                "x": 60,
-                "y": 320,
+                "x": 40,
+                "y": 40,
                 "wires": [
                     {
-                        "id": "81bc9dcdc6f12ca7"
+                        "id": "4720bda7b9562a3e"
                     }
                 ]
             }
@@ -28,9 +28,13 @@
                 ]
             },
             {
-                "x": 1240,
-                "y": 440,
+                "x": 1760,
+                "y": 520,
                 "wires": [
+                    {
+                        "id": "548d57bda2b1d684",
+                        "port": 0
+                    },
                     {
                         "id": "e560c108b57b340f",
                         "port": 0
@@ -38,8 +42,8 @@
                 ]
             },
             {
-                "x": 1040,
-                "y": 560,
+                "x": 1380,
+                "y": 600,
                 "wires": [
                     {
                         "id": "e560c108b57b340f",
@@ -53,6 +57,16 @@
                 "name": "emailsubject",
                 "type": "str",
                 "value": "Auto Runing Code failed"
+            },
+            {
+                "name": "codepath",
+                "type": "str",
+                "value": ""
+            },
+            {
+                "name": "logfile",
+                "type": "str",
+                "value": "/tmp/autopython.log"
             }
         ],
         "meta": {
@@ -61,9 +75,6 @@
             "author": "Zack Dai",
             "desc": "run a python script, if err send a email",
             "keywords": "Python"
-        },
-        "credentials": {
-            "apppassword": "seywjrmakrtrotav"
         },
         "color": "#DDAA99",
         "inputLabels": [
@@ -81,39 +92,20 @@
         "type": "exec",
         "z": "3c9d7e0fbc28d954",
         "command": "python3 ",
-        "addpay": "filename",
+        "addpay": "codepath",
         "append": "",
         "useSpawn": "false",
         "timer": "",
         "winHide": false,
         "oldrc": false,
         "name": "",
-        "x": 460,
-        "y": 300,
+        "x": 600,
+        "y": 140,
         "wires": [
             [],
             [],
             [
                 "402fe288bc1a8859"
-            ]
-        ]
-    },
-    {
-        "id": "a6319520672c033f",
-        "type": "template",
-        "z": "3c9d7e0fbc28d954",
-        "name": "test.py",
-        "field": "filename",
-        "fieldType": "msg",
-        "format": "handlebars",
-        "syntax": "mustache",
-        "template": "/tmp/test.py",
-        "output": "str",
-        "x": 310,
-        "y": 220,
-        "wires": [
-            [
-                "67929dc3d1997e87"
             ]
         ]
     },
@@ -125,10 +117,10 @@
         "port": "465",
         "secure": true,
         "tls": true,
-        "name": "example@email.com",
+        "name": "zack.dai@delta4digital.com",
         "dname": "err warning email",
-        "x": 1270,
-        "y": 180,
+        "x": 1650,
+        "y": 120,
         "wires": []
     },
     {
@@ -151,13 +143,15 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 850,
-        "y": 460,
+        "x": 930,
+        "y": 280,
         "wires": [
             [
                 "89cdf079c2d23a1b"
             ],
-            []
+            [
+                "b471303f36625e41"
+            ]
         ]
     },
     {
@@ -168,9 +162,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "payload.filename",
+                "p": "payload.codepath",
                 "pt": "msg",
-                "to": "filename",
+                "to": "codepath",
                 "tot": "msg"
             },
             {
@@ -186,8 +180,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 640,
-        "y": 360,
+        "x": 740,
+        "y": 260,
         "wires": [
             [
                 "e560c108b57b340f"
@@ -205,8 +199,8 @@
         "syntax": "mustache",
         "template": "<head>\n</head>\n\n\n<body>\n    <p>Code running fail:{{{payload.filename }}}</p>\n    <p>Time: {{{payload.time }}}</p>\n    <p>Msg: {{{payload.message }}}</p>\n </body>",
         "output": "str",
-        "x": 1060,
-        "y": 180,
+        "x": 1340,
+        "y": 140,
         "wires": [
             [
                 "20b3f52d0a88be51"
@@ -232,27 +226,157 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1100,
-        "y": 340,
+        "x": 1120,
+        "y": 160,
         "wires": [
             [
-                "8f736d0738553d91"
+                "8f736d0738553d91",
+                "b49f01fb6679be26"
             ]
         ]
     },
     {
-        "id": "81bc9dcdc6f12ca7",
+        "id": "b471303f36625e41",
+        "type": "template",
+        "z": "3c9d7e0fbc28d954",
+        "name": "success template",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{{payload.time}}} {{{payload.codepath}}} success",
+        "output": "str",
+        "x": 1270,
+        "y": 320,
+        "wires": [
+            [
+                "67b492276a51a039"
+            ]
+        ]
+    },
+    {
+        "id": "b49f01fb6679be26",
+        "type": "template",
+        "z": "3c9d7e0fbc28d954",
+        "name": "fail tmplate",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{{payload.time}}} {{{payload.codepath}}} FAIL!!!",
+        "output": "str",
+        "x": 1310,
+        "y": 240,
+        "wires": [
+            [
+                "67b492276a51a039"
+            ]
+        ]
+    },
+    {
+        "id": "f1f4d4d2d39f060b",
+        "type": "file",
+        "z": "3c9d7e0fbc28d954",
+        "name": "joblogs",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 1820,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4720bda7b9562a3e",
         "type": "switch",
         "z": "3c9d7e0fbc28d954",
-        "name": "set filename",
-        "property": "filename",
+        "name": "msg.codepath check",
+        "property": "codepath",
         "propertyType": "msg",
         "rules": [
             {
-                "t": "empty"
+                "t": "else"
             },
             {
+                "t": "null"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 220,
+        "y": 120,
+        "wires": [
+            [
+                "67929dc3d1997e87"
+            ],
+            [
+                "85113b441de78bd4"
+            ]
+        ]
+    },
+    {
+        "id": "548d57bda2b1d684",
+        "type": "change",
+        "z": "3c9d7e0fbc28d954",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.filename",
+                "pt": "msg",
+                "to": "filename",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload.time",
+                "pt": "msg",
+                "to": "$now()",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload.code",
+                "pt": "msg",
+                "to": "1",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload.message",
+                "pt": "msg",
+                "to": "Error. No codepath set, set a msg.codepath before sent to the subflow",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 600,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "85113b441de78bd4",
+        "type": "switch",
+        "z": "3c9d7e0fbc28d954",
+        "name": "$codepath check",
+        "property": "codepath",
+        "propertyType": "env",
+        "rules": [
+            {
                 "t": "else"
+            },
+            {
+                "t": "empty"
             }
         ],
         "checkall": "true",
@@ -262,10 +386,64 @@
         "y": 300,
         "wires": [
             [
-                "a6319520672c033f"
+                "19060ed1fe7d5397"
             ],
             [
+                "548d57bda2b1d684"
+            ]
+        ]
+    },
+    {
+        "id": "19060ed1fe7d5397",
+        "type": "change",
+        "z": "3c9d7e0fbc28d954",
+        "name": "codepath in variable",
+        "rules": [
+            {
+                "t": "set",
+                "p": "codepath",
+                "pt": "msg",
+                "to": "codepath",
+                "tot": "env"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 220,
+        "wires": [
+            [
                 "67929dc3d1997e87"
+            ]
+        ]
+    },
+    {
+        "id": "67b492276a51a039",
+        "type": "change",
+        "z": "3c9d7e0fbc28d954",
+        "name": "set logfile",
+        "rules": [
+            {
+                "t": "set",
+                "p": "filename",
+                "pt": "msg",
+                "to": "logfile",
+                "tot": "env"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1580,
+        "y": 260,
+        "wires": [
+            [
+                "f1f4d4d2d39f060b"
             ]
         ]
     }
